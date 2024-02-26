@@ -41,15 +41,18 @@
 %global repo            prometheus
 %global provider_prefix %{provider}.%{provider_tld}/%{project}/%{repo}
 %global import_path     %{provider_prefix}
-%global prometheus_tag  v2.48.1
 
 Name:           %{repo}
+%if "0%{?_version}" == "0"
 Version:        2.48.1
+%else
+Version:        %{_version}
+%endif
 Release:        1%{?dist}
 Summary:        The Prometheus monitoring system and time series database
 License:        ASL 2.0
 URL:            https://%{provider_prefix}
-Source0:        https://%{provider_prefix}/archive/%{prometheus_tag}/%{repo}-%{prometheus_tag}.tar.gz
+Source0:        https://%{provider_prefix}/archive/v%{version}/%{repo}-v%{version}.tar.gz
 Source1:        %{repo}.service
 
 %if 0%{?fedora} || 0%{?rhel} == 7
