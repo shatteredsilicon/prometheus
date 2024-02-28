@@ -44,7 +44,7 @@
 
 Name:           %{repo}
 %if "0%{?_version}" == "0"
-Version:        2.48.1
+Version:        2.50.1
 %else
 Version:        %{_version}
 %endif
@@ -195,7 +195,7 @@ exit 1
 %if 0%{?golang_build:1}
 export GOCOMPILER='%{golang_build} -ldflags "$LDFLAGS"'
 %else
-export GOCOMPILER='GO111MODULE=off go build -ldflags "$LDFLAGS"'
+export GOCOMPILER='go build -ldflags "$LDFLAGS"'
 %endif
 %endif
 
@@ -222,23 +222,16 @@ function gobuild { eval ${GOCOMPILER} -a -v -x "$@"; }
 mkdir -p src/github.com/prometheus
 ln -s ../../../ src/github.com/prometheus/prometheus
 
-%if ! 0%{?with_bundled}
-export GOPATH=$(pwd):%{gopath}
-%else
-# build from bundled dependencies
-export GOPATH=$(pwd):$(pwd)/Godeps/_workspace:%{gopath}
-%endif
-
 # set environment variables
 export GO_VERSION=$(go version | cut -d' ' -f3 | sed 's/go//')
 export BUILDDATE=$(date +%%Y%%m%%d-%%H:%%M:%%S)
 
 # build prometheus
-export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/prometheus/vendor/github.com/prometheus/common/version.Branch=v%{version} "
-export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/prometheus/vendor/github.com/prometheus/common/version.Version=%{version} "
-export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/prometheus/vendor/github.com/prometheus/common/version.Revision=%{prometheus_tag}"
-export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/prometheus/vendor/github.com/prometheus/common/version.BuildUser=Jenkins "
-export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/prometheus/vendor/github.com/prometheus/common/version.BuildDate=${BUILDDATE} "
+export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.Branch=v%{version} "
+export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.Version=v%{version} "
+export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.Revision=v%{version} "
+export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.BuildUser=ssm "
+export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.BuildDate=${BUILDDATE} "
 
 gobuild -o bin/prometheus %{import_path}/cmd/prometheus
 gobuild -o bin/promtool   %{import_path}/cmd/promtool
