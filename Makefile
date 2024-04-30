@@ -2,7 +2,7 @@ BUILDDIR	?= /tmp/ssmbuild
 
 ARCH	:= $(shell rpm --eval "%{_arch}")
 VERSION	?= $(shell rpmspec -q --queryformat="%{version}" prometheus.spec)
-RELEASE	:= $(shell rpmspec -q --queryformat="%{release}" prometheus.spec)
+RELEASE	?= $(shell rpmspec -q --queryformat="%{release}" prometheus.spec)
 
 SRPM_FILE		:= $(BUILDDIR)/results/SRPMS/prometheus-$(VERSION)-$(RELEASE).src.rpm
 RPM_FILE		:= $(BUILDDIR)/results/RPMS/prometheus-$(VERSION)-$(RELEASE).$(ARCH).rpm
