@@ -20,6 +20,7 @@ $(SRPM_FILE):
 	cp prometheus.spec $(BUILDDIR)/rpmbuild/SPECS/prometheus.spec
 	cp prometheus.service $(BUILDDIR)/rpmbuild/SOURCES/prometheus.service
 	sed -i -E 's/%\{\??_version\}/$(VERSION)/g' $(BUILDDIR)/rpmbuild/SPECS/prometheus.spec
+	sed -i -E 's/%\{\??_release\}/$(RELEASE)/g' $(BUILDDIR)/rpmbuild/SPECS/prometheus.spec
 	spectool -C $(BUILDDIR)/rpmbuild/SOURCES -g $(BUILDDIR)/rpmbuild/SPECS/prometheus.spec
 
 	tar -C $(BUILDDIR)/rpmbuild/SOURCES/ -zxf $(BUILDDIR)/rpmbuild/SOURCES/prometheus-v$(VERSION).tar.gz

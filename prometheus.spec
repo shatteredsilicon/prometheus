@@ -48,7 +48,11 @@ Version:        2.50.1
 %else
 Version:        %{_version}
 %endif
+%if "0%{?_release}" == "0"
 Release:        1%{?dist}
+%else
+Release:        %{_release}
+%endif
 Summary:        The Prometheus monitoring system and time series database
 License:        ASL 2.0
 URL:            https://%{provider_prefix}
