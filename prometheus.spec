@@ -44,7 +44,7 @@
 
 Name:           %{repo}
 %if "0%{?_version}" == "0"
-Version:        2.50.1
+Version:        2.52.0
 %else
 Version:        %{_version}
 %endif
