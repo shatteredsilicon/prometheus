@@ -79,6 +79,9 @@ BuildRequires:   gcc-go >= %{gccgo_min_vers}
 BuildRequires:   golang >= 1.7.3
 %endif
 
+BuildRequires: nodejs
+BuildRequires: npm
+
 %description
 %{summary}
 
@@ -230,6 +233,21 @@ ln -s ../../../ src/github.com/prometheus/prometheus
 export GO_VERSION=$(go version | cut -d' ' -f3 | sed 's/go//')
 export BUILDDATE=$(date +%%Y%%m%%d-%%H:%%M:%%S)
 
+# build and embed web ui
+pushd web/ui
+  CI="" npm run build
+
+  cp embed.go.tmpl embed.go
+
+  GZIP_OPTS="-fk"
+  # gzip option '-k' may not always exist in the latest gzip available on different distros.
+  if ! gzip -k -h &>/dev/null; then GZIP_OPTS="-f"; fi
+
+  find static -type f -name '*.gz' -delete
+  find static -type f -exec gzip $GZIP_OPTS '{}' \; -print0 | xargs -0 -I % echo %.gz | sort | xargs echo //go:embed >> embed.go
+  echo var EmbedFS embed.FS >> embed.go
+popd
+
 # build prometheus
 export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.Branch=v%{version} "
 export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.Version=v%{version} "
@@ -237,8 +255,8 @@ export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.Revisio
 export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.BuildUser=ssm "
 export OLD_LDFLAGS="$OLD_LDFLAGS -X github.com/prometheus/common/version.BuildDate=${BUILDDATE} "
 
-gobuild -o bin/prometheus %{import_path}/cmd/prometheus
-gobuild -o bin/promtool   %{import_path}/cmd/promtool
+gobuild -o bin/prometheus -tags builtinassets %{import_path}/cmd/prometheus
+gobuild -o bin/promtool -tags builtinassets %{import_path}/cmd/promtool
 
 %install
 install -D -p -m 0755 bin/%{repo}  %{buildroot}%{_sbindir}/%{repo}
