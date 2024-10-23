@@ -24,7 +24,7 @@ $(SRPM_FILE):
 	spectool -C $(BUILDDIR)/rpmbuild/SOURCES -g $(BUILDDIR)/rpmbuild/SPECS/prometheus.spec
 
 	tar -C $(BUILDDIR)/rpmbuild/SOURCES/ -zxf $(BUILDDIR)/rpmbuild/SOURCES/prometheus-v$(VERSION).tar.gz
-	cd $(BUILDDIR)/rpmbuild/SOURCES/prometheus-$(VERSION) && go mod vendor && tar -czf $(BUILDDIR)/rpmbuild/SOURCES/prometheus-v$(VERSION).tar.gz -C $(BUILDDIR)/rpmbuild/SOURCES prometheus-$(VERSION)
+	cd $(BUILDDIR)/rpmbuild/SOURCES/prometheus-$(VERSION) && go mod vendor && cd $(BUILDDIR)/rpmbuild/SOURCES/prometheus-$(VERSION)/web/ui && npm install && tar -czf $(BUILDDIR)/rpmbuild/SOURCES/prometheus-v$(VERSION).tar.gz -C $(BUILDDIR)/rpmbuild/SOURCES prometheus-$(VERSION)
 
 	rpmbuild -bs --define "debug_package %{nil}" --define "_topdir $(BUILDDIR)/rpmbuild" $(BUILDDIR)/rpmbuild/SPECS/prometheus.spec
 	mv $(BUILDDIR)/rpmbuild/SRPMS/$(shell basename $(SRPM_FILE)) $(SRPM_FILE)
